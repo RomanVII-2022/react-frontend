@@ -12,6 +12,8 @@ import { getAllUsers, fetchUsers } from '../features/users/userSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 
 const Users = () => {
 
@@ -59,21 +61,39 @@ const Users = () => {
     <div>
         <NavBar />
         <Container>
-            <Button style={{marginTop: '10px'}} variant="secondary">Add</Button>
-            <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
-            <div>
-                {
-                    allColumns.map(column => (
-                        <div key={column.id}>
-                            <label>
-                                <input type="checkbox" {...column.getToggleHiddenProps()} />
-                                {column.Header}
-                            </label>
-                        </div>
-                    ))
-                }
-            </div>
-            <Table {...getTableProps()} style={{marginTop: '10px'}} striped bordered hover size="sm">
+            <Row>
+                <Col>
+                    <Button style={{marginTop: '10px'}} variant="secondary">Add</Button>
+                </Col>
+                <Col style={{marginTop: '20px'}}>
+                    <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+                </Col>
+                <Col>
+                    <div className="float-end">
+                        <DropdownButton
+                            id="dropdown-button-dark-example2"
+                            variant="secondary"
+                            menuVariant="dark"
+                            title="Column Slice"
+                            className="mt-2"
+                        >
+                            {
+                                allColumns.map(column => (
+                                    <div key={column.id}>
+                                        <label>
+                                            <input type="checkbox" {...column.getToggleHiddenProps()} />{' '}
+                                            {column.Header}
+                                        </label>
+                                    </div>
+                                ))
+                            }
+                        </DropdownButton>
+                    </div>
+                </Col>
+            </Row>
+
+            
+            <Table {...getTableProps()} style={{marginTop: '10px'}} striped bordered hover size="sm" responsive>
                 <thead>
                     {headerGroups.map(headerGroup => (
                     <tr {...headerGroup.getHeaderGroupProps()}>
@@ -86,7 +106,6 @@ const Users = () => {
                             <div>{column.canFilter ? column.render('Filter'):null}</div>
                         </th>
                         ))}
-                        <th>Action</th>
                     </tr>
                     ))}
                 </thead>
@@ -103,10 +122,10 @@ const Users = () => {
                                 {cell.render('Cell')}
 
                                 {console.log()}
+
                             </td>
                             )
                         })}
-                        <td><button>Edit</button></td>
                         </tr>
                     )
                     })}
@@ -164,7 +183,7 @@ const Users = () => {
                         </select>
                     </Col>
                     <Col>
-                            <div style={{marginLeft: '95px'}}>
+                            <div className="float-end">
                                 <button style={{border: '1px solid grey', borderRadius: '5px', 
                                 outline: '0', backgroundColor: '#f5f5f5'}} 
                                 onClick={() => gotoPage(0)} disabled={!canPreviousPage}>{'<<'}</button>

@@ -11,7 +11,7 @@ const GlobalFilter = ({filter, setFilter}) => {
 
   return (
     <div>
-        Search: {' '}
+        <strong>Search:</strong> {' '}
         <input style={{width: '150px', border: '1px solid grey',
             borderRadius: '5px',
             height: '20px',
