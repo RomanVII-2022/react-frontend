@@ -8,18 +8,60 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllUsers, fetchUsers } from '../features/users/userSlice';
+import { getAllUsers, fetchUsers, addUser, isLoading } from '../features/users/userSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import Dropdown from 'react-bootstrap/Dropdown';
+import Modal from 'react-bootstrap/Modal';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import Form from 'react-bootstrap/Form';
+import Spinner from 'react-bootstrap/Spinner';
+import Alert from 'react-bootstrap/Alert';
 
 const Users = () => {
 
+    const [alertShow, setAlertShow] = useState(false);
+
     const users = useSelector(getAllUsers)
 
+    const lding = useSelector(isLoading)
+
+    const [errmsg, seterrmsg] = useState('')
+
     const dispatch = useDispatch()
+
+   function handleSubmitAddUser (e) {
+    e.preventDefault()
+    const eEmail = users.filter(user => user.email === e.target.email.value)
+    const ePhone = users.filter(user => user.phone === e.target.phone.value)
+
+    if (eEmail.length > 0) {
+        setAlertShow(true)
+        seterrmsg('Email entered already exists')
+    }else if (ePhone.length > 0) {
+        setAlertShow(true)
+        seterrmsg('Phone number entered already exists')
+    }else if (e.target.role.value === 'Select Role') {
+        setAlertShow(true)
+        seterrmsg('Please Select Role')
+    }else if (e.target.status.value === 'Select Status') {
+        setAlertShow(true)
+        seterrmsg('Please Select Status')
+    }else {
+        dispatch(addUser(e.target))
+    }
+
+   }
+
+   function handleCloseAlert() {
+        setAlertShow(false)
+        seterrmsg('')
+   }
+
+    const [show, setShow] = useState(false);
+
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
     const data = useMemo(() => users, [])
@@ -55,6 +97,7 @@ const Users = () => {
 
     useEffect(() => {
         dispatch(fetchUsers())
+        console.log("fetching users ...")
     }, [])
 
   return (
@@ -63,7 +106,7 @@ const Users = () => {
         <Container>
             <Row>
                 <Col>
-                    <Button style={{marginTop: '10px'}} variant="secondary">Add</Button>
+                    <Button style={{marginTop: '10px'}} variant="secondary" onClick={handleShow}>Add</Button>
                 </Col>
                 <Col style={{marginTop: '20px'}}>
                     <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
@@ -201,8 +244,86 @@ const Users = () => {
                 </Row>
             </div>
         </Container>
+
+        <Modal show={show} onHide={handleClose}>
+            <Modal.Header closeButton>
+            <Modal.Title>Add Personel</Modal.Title>
+            </Modal.Header>
+            {lding ? <Container>
+                <Row className="justify-content-md-center">
+                    <Col md="auto">
+                    <Spinner animation="border" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </Spinner>
+                    </Col>
+                </Row>
+            </Container> : ''}
+
+            {alertShow && errmsg?
+                <Container>
+                    <div>
+                        <Alert style={{height: '50px', marginTop: '4px'}} variant="danger" onClose={handleCloseAlert} dismissible>
+                            <p><strong>{errmsg}</strong></p>
+                        </Alert>
+                    </div>
+                </Container>: ''
+            }
+            
+
+
+            <Form onSubmit={handleSubmitAddUser}>
+                <Modal.Body>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Full Name: </strong></Form.Label>
+                        <Form.Control type="text" name="name" placeholder="Enter name" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                        <Form.Label><strong>Email address: </strong></Form.Label>
+                        <Form.Control type="email" name="email" placeholder="Enter email" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPhone">
+                        <Form.Label><strong>Phone Number: </strong></Form.Label>
+                        <Form.Control type="text" name="phone" placeholder="Enter phone number eg: +254712345678" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicJob">
+                        <Form.Label><strong>Job Title: </strong></Form.Label>
+                        <Form.Control type="text" name="jobTitle" placeholder="Enter job title" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicPassword">
+                        <Form.Label><strong>Password: </strong></Form.Label>
+                        <Form.Control type="password" name="password" placeholder="Password" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicRole">
+                        <Form.Label><strong>Role: </strong></Form.Label>
+                        <Form.Select name="role" required>
+                            <option>Select Role</option>
+                            <option value="0">User</option>
+                            <option value="1">Admin</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicStatus">
+                        <Form.Label><strong>Status: </strong></Form.Label>
+                        <Form.Select aria-label="Default select example" name="status" required>
+                            <option>Select Status</option>
+                            <option value="0">Inactive</option>
+                            <option value="1">Active</option>
+                        </Form.Select>
+                    </Form.Group>
+                </Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={handleClose}>
+                    Close
+                </Button>
+                <Button type='submit' variant="primary">
+                    Save
+                </Button>
+                </Modal.Footer>
+            </Form>
+        </Modal>
+
     </div>
   )
+  
 }
 
 export default Users
