@@ -1,4 +1,3 @@
-import Button from "react-bootstrap/esm/Button";
 import { MdEdit, MdDelete } from 'react-icons/md';
 
 export const COLUMNS = [
@@ -51,14 +50,10 @@ export const COLUMNS = [
         accessor: "action",
         Cell: ({row}) => (
           <div>
-            <i style={{cursor: 'pointer'}} onClick={() => handleUserEdit(row.original)}><MdEdit /></i> | 
+            <i style={{cursor: 'pointer'}}><MdEdit /></i> | 
             {' '}<i style={{cursor: 'pointer'}}><MdDelete /></i>
           </div>
         ),
         disableFilters: true
     }
 ]
-
-function handleUserEdit(user) {
-    console.log(user.name)
-}

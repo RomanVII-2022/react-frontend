@@ -23,6 +23,22 @@ export const addUser = createAsyncThunk('user/addUser', async (user) => {
     return response.data
 })
 
+
+export const editUser = createAsyncThunk('user/editUser', async (user) => {
+    const role = parseInt(user.get('role'))
+    user.set('role', role)
+    const status = parseInt(user.get('status'))
+    user.set('status', status)
+    const id = parseInt(user.get('id'))
+    const response = await axios.put(`http://localhost:8000/users/${id}/`, user)
+    return response.data
+})
+
+export const deleteUser = createAsyncThunk('user/deleteUser', async (id) => {
+    const response = await axios.delete(`http://localhost:8000/users/${id}/`)
+    return response.data
+})
+
 const initialState = {
     loading: false,
     users: [],
@@ -58,6 +74,45 @@ const userSlice = createSlice({
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error("Error! User Not Added");
+        })
+        builders.addCase(editUser.pending, (state, action) => {
+            state.loading = true
+        })
+        builders.addCase(editUser.fulfilled, (state, action) => {
+            state.loading = false
+            const {id, name, email, phone, jobTitle, password, role, status} = action.payload
+            const doesExist = state.users.find(user => user.id === id)
+            if (doesExist) {
+                doesExist.name = name
+                doesExist.email = email
+                doesExist.phone = phone
+                doesExist.jobTitle = jobTitle
+                doesExist.password = password
+                doesExist.role = role
+                doesExist.status = status
+            }
+            alertify.set('notifier','position', 'top-right');
+            alertify.success("User Edited Successfully");
+        })
+        builders.addCase(editUser.rejected, (state, action) => {
+            state.loading = false
+            alertify.set('notifier','position', 'top-right');
+            alertify.error("Error! User Not Edited");
+        })
+        builders.addCase(deleteUser.pending, (state, action) => {
+            state.loading = true
+        })
+        builders.addCase(deleteUser.fulfilled, (state, action) => {
+            state.loading = false
+            const id = parseInt(action.meta.arg)
+            state.users = state.users.filter(user => user.id !== id)
+            alertify.set('notifier','position', 'top-right');
+            alertify.success("User Deleted Successfully");
+        })
+        builders.addCase(deleteUser.rejected, (state, action) => {
+            state.loading = false
+            alertify.set('notifier','position', 'top-right');
+            alertify.error("Error! User Not Deleted");
         })
     }
 })
