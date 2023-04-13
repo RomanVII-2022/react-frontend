@@ -4,6 +4,8 @@ import 'alertifyjs/build/css/alertify.css';
 import Dashboard from './components/Dashboard';
 import Users from './components/Users';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Incidents from './components/Incidents';
+import ManageIncident from './components/ManageIncident';
 
 function App() {
 
@@ -13,6 +15,8 @@ function App() {
         <Routes>
           <Route path='home' element={<Dashboard />} />
           <Route path='users' element={<Users />} />
+          <Route path='incidents' element={<Incidents />} />
+          <Route path='/incidents/manage' element={<ManageIncident />} />
         </Routes>
       </Router>
     </div>
