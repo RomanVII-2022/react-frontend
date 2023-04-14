@@ -9,7 +9,8 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllCategories, fetchCategories, addCategory, isLoading, editCategory, deleteCategory } from '../features/incidentsCategory/incidentsCategorySlice';
+import { getAllTypes, fetchTypes, addType, isLoading, editType, deleteType } from '../features/incidentType/incidentTypeSlice';
+import { getAllCategories } from '../features/incidentsCategory/incidentsCategorySlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -20,53 +21,52 @@ import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { MdEdit, MdDelete } from 'react-icons/md';
 import { Link } from 'react-router-dom';
-import IncidentType from './IncidentType';
 
-const ManageIncident = () => {
+const IncidentType = () => {
 
-    const [categoryDelete, setCategoryDelete] = useState({})
+    const [typeDelete, setTypeDelete] = useState({})
 
     const [deleteShow, setDeleteShow] = useState(false);
 
     const handleDeleteClose = () => setDeleteShow(false);
     const handleDeleteShow = () => setDeleteShow(true);
 
-    function handleCategoryDelete(category) {
+    function handleTypeDelete(type) {
         handleDeleteShow()
-        setCategoryDelete(category)
+        setTypeDelete(type)
     }
 
     const handleDeleteBtn = (id) => {
-        dispatch(deleteCategory(id))
+        dispatch(deleteType(id))
     }
 
-    const [categoryEdit, setCategoryEdit] = useState({})
+    const [typeEdit, setTypeEdit] = useState({})
 
     const [editShow, setEditShow] = useState(false);
 
     const handleEditClose = () => setEditShow(false);
     const handleEditShow = () => setEditShow(true);
 
-    function handleCategoryEdit(category) {
+    function handleTypeEdit(type) {
         handleEditShow()
-        setCategoryEdit(category)
+        setTypeEdit(type)
     }
 
-    const handleEditSubmitCategory = (e, id) => {
+    const handleEditSubmitType = (e, id) => {
         e.preventDefault()
 
         const formData = new FormData(e.target)
         const ID = parseInt(id)
         formData.append('id', ID)
 
-        const otherCategories = categories.filter(category => category.id !== id)
-        const eName = otherCategories.filter(category => category.email === e.target.name.value)
+        const otherTypes = types.filter(type => type.id !== id)
+        const eName = otherTypes.filter(type => type.email === e.target.name.value)
 
         if (eName.length > 0) {
             setAlertShow(true)
-            seterrmsg('Category already exists')
+            seterrmsg('Type already exists')
         }else {
-            dispatch(editCategory(formData))
+            dispatch(editType(formData))
             handleClose()
         }
     }
@@ -79,9 +79,15 @@ const ManageIncident = () => {
             disableFilters: true
         },
         {
-            Header: 'Category Name:',
-            Footer: 'Category Name',
+            Header: 'Type Name:',
+            Footer: 'Type Name',
             accessor: 'name',
+        },
+        {
+            Header: 'Category:',
+            Footer: 'Category',
+            accessor: 'category',
+            Cell: ({value}) => {const cat = categories.filter(category => category.id === value); value = cat[0].name; return value}
         },
         {
             Header: 'Description:',
@@ -94,8 +100,8 @@ const ManageIncident = () => {
             accessor: "action",
             Cell: ({row}) => (
               <div>
-                <i style={{cursor: 'pointer'}} onClick={() => handleCategoryEdit(row.original)}><MdEdit /></i> | 
-                {' '}<i style={{cursor: 'pointer'}} onClick={() => handleCategoryDelete(row.original)}><MdDelete /></i>
+                <i style={{cursor: 'pointer'}} onClick={() => handleTypeEdit(row.original)}><MdEdit /></i> | 
+                {' '}<i style={{cursor: 'pointer'}} onClick={() => handleTypeDelete(row.original)}><MdDelete /></i>
               </div>
             ),
             disableFilters: true
@@ -106,22 +112,24 @@ const ManageIncident = () => {
 
     const categories = useSelector(getAllCategories)
 
+    const types = useSelector(getAllTypes)
+
     const lding = useSelector(isLoading)
 
     const [errmsg, seterrmsg] = useState('')
 
     const dispatch = useDispatch()
 
-   function handleSubmitAddCategory (e) {
+   function handleSubmitAddType (e) {
     e.preventDefault()
-    const eName = categories.filter(category => category.name === e.target.name.value)
+    const eName = types.filter(type => type.name === e.target.name.value)
 
     if (eName.length > 0) {
         setAlertShow(true)
-        seterrmsg('Category already exists')
+        seterrmsg('Type already exists')
     }else {
         const formData = new FormData(e.target)
-        dispatch(addCategory(formData))
+        dispatch(addType(formData))
         handleClose()
     }
 
@@ -138,7 +146,7 @@ const ManageIncident = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => categories, [])
+    const data = useMemo(() => types, [])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -170,23 +178,13 @@ const ManageIncident = () => {
     const { globalFilter, pageIndex, pageSize } = state
 
     useEffect(() => {
-        dispatch(fetchCategories())
-        console.log("fetching categories ...")
+        dispatch(fetchTypes())
+        console.log("fetching types ...")
     }, [])
 
   return (
     <div>
-        <NavBar />
         <Container>
-            <Tabs
-            style={{marginTop: '10px'}}
-            defaultActiveKey="categories"
-            id="justify-tab-example"
-            className="mb-3"
-            justify
-            >
-                <Tab eventKey="categories" title="Categories">
-                <Container>
                     <Row>
                         <Col>
                             <Button style={{marginTop: '10px'}} variant="secondary" onClick={handleShow}>Add</Button>
@@ -330,7 +328,7 @@ const ManageIncident = () => {
 
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Add Incident Category</Modal.Title>
+                    <Modal.Title>Add Incident Type</Modal.Title>
                     </Modal.Header>
                     {lding ? <Container>
                         <Row className="justify-content-md-center">
@@ -354,10 +352,19 @@ const ManageIncident = () => {
                     
 
 
-                    <Form onSubmit={handleSubmitAddCategory}>
+                    <Form onSubmit={handleSubmitAddType}>
                         <Modal.Body>
                             <Form.Group className="mb-3" controlId="formBasicName">
                                 <Form.Label><strong>Category Name: </strong></Form.Label>
+                                <Form.Select name="category" aria-label="Default select example">
+                                    <option>Select Category</option>
+                                    {categories.map(category => (
+                                        <option value={category.id}>{category.name}</option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicName">
+                                <Form.Label><strong>Type Name: </strong></Form.Label>
                                 <Form.Control type="text" name="name" placeholder="Enter name" required />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
@@ -378,7 +385,7 @@ const ManageIncident = () => {
 
                 <Modal show={editShow} onHide={handleEditClose}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Edit Category</Modal.Title>
+                    <Modal.Title>Edit Type</Modal.Title>
                     </Modal.Header>
                     {lding ? <Container>
                         <Row className="justify-content-md-center">
@@ -402,15 +409,24 @@ const ManageIncident = () => {
                     
 
 
-                    <Form onSubmit={(e) => handleEditSubmitCategory(e, categoryEdit.id)}>
+                    <Form onSubmit={(e) => handleEditSubmitType(e, typeEdit.id)}>
                         <Modal.Body>
                             <Form.Group className="mb-3" controlId="formBasicName">
+                                <Form.Label><strong>Category Name: </strong></Form.Label>
+                                <Form.Select name="category" defaultValue={typeEdit.category} aria-label="Default select example">
+                                    <option>Select Category</option>
+                                    {categories.map(category => (
+                                        <option value={category.id}>{category.name}</option>
+                                    ))}
+                                </Form.Select>
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicName">
                                 <Form.Label><strong>Name: </strong></Form.Label>
-                                <Form.Control type="text" name="name" defaultValue={categoryEdit.name} placeholder="Enter name" required />
+                                <Form.Control type="text" name="name" defaultValue={typeEdit.name} placeholder="Enter name" required />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                 <Form.Label><strong>Description:</strong></Form.Label>
-                                <Form.Control as="textarea" name='description' defaultValue={categoryEdit.description} rows={3} required />
+                                <Form.Control as="textarea" name='description' defaultValue={typeEdit.description} rows={3} required />
                             </Form.Group>
                         </Modal.Body>
                         <Modal.Footer>
@@ -427,7 +443,7 @@ const ManageIncident = () => {
 
                 <Modal show={deleteShow} onHide={handleDeleteClose}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Delete Category</Modal.Title>
+                    <Modal.Title>Delete Type</Modal.Title>
                     </Modal.Header>
                     {lding ? <Container>
                         <Row className="justify-content-md-center">
@@ -453,28 +469,19 @@ const ManageIncident = () => {
 
                     
                     <Modal.Body>
-                        <p className='text-danger'>Are you sure you want to delete this category?</p>
+                        <p className='text-danger'>Are you sure you want to delete this type?</p>
                     </Modal.Body>
                     <Modal.Footer>
                     <Button variant="secondary" onClick={handleDeleteClose}>
                         Close
                     </Button>
-                    <Button type='submit' onClick={() => handleDeleteBtn(categoryDelete.id)} variant="danger">
+                    <Button type='submit' onClick={() => handleDeleteBtn(typeDelete.id)} variant="danger">
                         Delete
                     </Button>
                     </Modal.Footer>
                 </Modal>
-                </Tab>
-                <Tab eventKey="types" title="Types">
-                    <IncidentType />
-                </Tab>
-                <Tab eventKey="violations" title="Violations">
-                    <h1>3</h1>
-                </Tab>
-            </Tabs>
-        </Container>
     </div>
   )
 }
 
-export default ManageIncident
+export default IncidentType
