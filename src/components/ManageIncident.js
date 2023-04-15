@@ -21,6 +21,7 @@ import Alert from 'react-bootstrap/Alert';
 import { MdEdit, MdDelete } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 import IncidentType from './IncidentType';
+import Violations from './Violations';
 
 const ManageIncident = () => {
 
@@ -469,7 +470,7 @@ const ManageIncident = () => {
                     <IncidentType />
                 </Tab>
                 <Tab eventKey="violations" title="Violations">
-                    <h1>3</h1>
+                    <Violations />
                 </Tab>
             </Tabs>
         </Container>

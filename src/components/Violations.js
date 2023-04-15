@@ -9,8 +9,7 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllTypes, fetchTypes, addType, isLoading, editType, deleteType } from '../features/incidentType/incidentTypeSlice';
-import { getAllCategories } from '../features/incidentsCategory/incidentsCategorySlice';
+import { getAllViolations, fetchViolations, addViolation, isLoading, editViolation, deleteViolation } from '../features/violations/violationSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -22,7 +21,7 @@ import Alert from 'react-bootstrap/Alert';
 import { MdEdit, MdDelete } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
-const IncidentType = () => {
+const Violations = () => {
 
     const [typeDelete, setTypeDelete] = useState({})
 
@@ -37,7 +36,7 @@ const IncidentType = () => {
     }
 
     const handleDeleteBtn = (id) => {
-        dispatch(deleteType(id))
+        dispatch(deleteViolation(id))
     }
 
     const [typeEdit, setTypeEdit] = useState({})
@@ -59,14 +58,14 @@ const IncidentType = () => {
         const ID = parseInt(id)
         formData.append('id', ID)
 
-        const otherTypes = types.filter(type => type.id !== id)
+        const otherTypes = violations.filter(type => type.id !== id)
         const eName = otherTypes.filter(type => type.name === e.target.name.value)
 
         if (eName.length > 0) {
             setAlertShow(true)
-            seterrmsg('Type already exists')
+            seterrmsg('Violation already exists')
         }else {
-            dispatch(editType(formData))
+            dispatch(editViolation(formData))
             handleClose()
         }
     }
@@ -84,15 +83,14 @@ const IncidentType = () => {
             accessor: 'name',
         },
         {
-            Header: 'Category:',
-            Footer: 'Category',
-            accessor: 'category',
-            Cell: ({value}) => {const cat = categories.filter(category => category.id === value); value = cat[0].name; return value}
-        },
-        {
             Header: 'Description:',
             Footer: 'Description',
             accessor: 'description',
+        },
+        {
+            Header: 'Proposed Action:',
+            Footer: 'Proposed Action',
+            accessor: 'proposed',
         },
         {
             Header: "Action",
@@ -110,9 +108,7 @@ const IncidentType = () => {
 
     const [alertShow, setAlertShow] = useState(false);
 
-    const categories = useSelector(getAllCategories)
-
-    const types = useSelector(getAllTypes)
+    const violations = useSelector(getAllViolations)
 
     const lding = useSelector(isLoading)
 
@@ -122,14 +118,14 @@ const IncidentType = () => {
 
    function handleSubmitAddType (e) {
     e.preventDefault()
-    const eName = types.filter(type => type.name === e.target.name.value)
+    const eName = violations.filter(type => type.name === e.target.name.value)
 
     if (eName.length > 0) {
         setAlertShow(true)
-        seterrmsg('Type already exists')
+        seterrmsg('Violation already exists')
     }else {
         const formData = new FormData(e.target)
-        dispatch(addType(formData))
+        dispatch(addViolation(formData))
         handleClose()
     }
 
@@ -146,7 +142,7 @@ const IncidentType = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => types, [])
+    const data = useMemo(() => violations, [])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -178,8 +174,8 @@ const IncidentType = () => {
     const { globalFilter, pageIndex, pageSize } = state
 
     useEffect(() => {
-        dispatch(fetchTypes())
-        console.log("fetching types ...")
+        dispatch(fetchViolations())
+        console.log("fetching violations ...")
     }, [])
 
   return (
@@ -328,7 +324,7 @@ const IncidentType = () => {
 
                 <Modal show={show} onHide={handleClose}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Add Incident Type</Modal.Title>
+                    <Modal.Title>Add Violation</Modal.Title>
                     </Modal.Header>
                     {lding ? <Container>
                         <Row className="justify-content-md-center">
@@ -355,21 +351,16 @@ const IncidentType = () => {
                     <Form onSubmit={handleSubmitAddType}>
                         <Modal.Body>
                             <Form.Group className="mb-3" controlId="formBasicName">
-                                <Form.Label><strong>Category Name: </strong></Form.Label>
-                                <Form.Select name="category" aria-label="Default select example">
-                                    <option>Select Category</option>
-                                    {categories.map(category => (
-                                        <option value={category.id}>{category.name}</option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formBasicName">
                                 <Form.Label><strong>Type Name: </strong></Form.Label>
                                 <Form.Control type="text" name="name" placeholder="Enter name" required />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                 <Form.Label><strong>Description:</strong></Form.Label>
                                 <Form.Control as="textarea" name='description' rows={3} required />
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicAction">
+                                <Form.Label><strong>Proposed Action: </strong></Form.Label>
+                                <Form.Control type="text" name="proposed" placeholder="Enter proposed action" required />
                             </Form.Group>
                         </Modal.Body>
                         <Modal.Footer>
@@ -385,7 +376,7 @@ const IncidentType = () => {
 
                 <Modal show={editShow} onHide={handleEditClose}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Edit Type</Modal.Title>
+                    <Modal.Title>Edit Violation</Modal.Title>
                     </Modal.Header>
                     {lding ? <Container>
                         <Row className="justify-content-md-center">
@@ -412,21 +403,16 @@ const IncidentType = () => {
                     <Form onSubmit={(e) => handleEditSubmitType(e, typeEdit.id)}>
                         <Modal.Body>
                             <Form.Group className="mb-3" controlId="formBasicName">
-                                <Form.Label><strong>Category Name: </strong></Form.Label>
-                                <Form.Select name="category" defaultValue={typeEdit.category} aria-label="Default select example">
-                                    <option>Select Category</option>
-                                    {categories.map(category => (
-                                        <option value={category.id}>{category.name}</option>
-                                    ))}
-                                </Form.Select>
-                            </Form.Group>
-                            <Form.Group className="mb-3" controlId="formBasicName">
                                 <Form.Label><strong>Name: </strong></Form.Label>
                                 <Form.Control type="text" name="name" defaultValue={typeEdit.name} placeholder="Enter name" required />
                             </Form.Group>
                             <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
                                 <Form.Label><strong>Description:</strong></Form.Label>
                                 <Form.Control as="textarea" name='description' defaultValue={typeEdit.description} rows={3} required />
+                            </Form.Group>
+                            <Form.Group className="mb-3" controlId="formBasicAction">
+                                <Form.Label><strong>Proposed Action: </strong></Form.Label>
+                                <Form.Control type="text" name="proposed" defaultValue={typeEdit.proposed} placeholder="Enter proposed action" required />
                             </Form.Group>
                         </Modal.Body>
                         <Modal.Footer>
@@ -443,7 +429,7 @@ const IncidentType = () => {
 
                 <Modal show={deleteShow} onHide={handleDeleteClose}>
                     <Modal.Header closeButton>
-                    <Modal.Title>Delete Type</Modal.Title>
+                    <Modal.Title>Delete Violation</Modal.Title>
                     </Modal.Header>
                     {lding ? <Container>
                         <Row className="justify-content-md-center">
@@ -469,7 +455,7 @@ const IncidentType = () => {
 
                     
                     <Modal.Body>
-                        <p className='text-danger'>Are you sure you want to delete this type?</p>
+                        <p className='text-danger'>Are you sure you want to delete this violation?</p>
                     </Modal.Body>
                     <Modal.Footer>
                     <Button variant="secondary" onClick={handleDeleteClose}>
@@ -484,4 +470,4 @@ const IncidentType = () => {
   )
 }
 
-export default IncidentType
+export default Violations

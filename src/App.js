@@ -6,6 +6,8 @@ import Users from './components/Users';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Incidents from './components/Incidents';
 import ManageIncident from './components/ManageIncident';
+import Audits from './components/Audits';
+import ManageAudits from './components/ManageAudits';
 
 function App() {
 
@@ -17,6 +19,8 @@ function App() {
           <Route path='users' element={<Users />} />
           <Route path='incidents' element={<Incidents />} />
           <Route path='/incidents/manage' element={<ManageIncident />} />
+          <Route path='audits' element={<Audits />} />
+          <Route path='/audits/manage' element={<ManageAudits />} />
         </Routes>
       </Router>
     </div>
