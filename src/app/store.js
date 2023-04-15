@@ -4,6 +4,10 @@ import categoryReducer from '../features/incidentsCategory/incidentsCategorySlic
 import typeReducer from '../features/incidentType/incidentTypeSlice';
 import violationReducer from '../features/violations/violationSlice'
 import acategoryReducer from '../features/auditCategory/auditCategorySlice'
+import measureReducer from '../features/auditMeasure/auditMeasureSlice';
+import organizationReducer from '../features/organizations/organizationSlice';
+import atypeReducer from '../features/auditType/auditTypeSlice';
+import statusReducer from '../features/auditStatus/auditStatusSlice';
 
 export const store = configureStore({
     reducer: {
@@ -12,5 +16,9 @@ export const store = configureStore({
         type: typeReducer,
         violation: violationReducer,
         acategory: acategoryReducer,
+        measure: measureReducer,
+        organization: organizationReducer,
+        atype: atypeReducer,
+        status: statusReducer,
     }
 })

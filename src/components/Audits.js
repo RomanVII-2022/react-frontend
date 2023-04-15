@@ -149,28 +149,9 @@ const Incidents = () => {
 
     const dispatch = useDispatch()
 
-   function handleSubmitAddUser (e) {
+   function handleSubmitAddAudit (e) {
     e.preventDefault()
-    const eEmail = users.filter(user => user.email === e.target.email.value)
-    const ePhone = users.filter(user => user.phone === e.target.phone.value)
-
-    if (eEmail.length > 0) {
-        setAlertShow(true)
-        seterrmsg('Email entered already exists')
-    }else if (ePhone.length > 0) {
-        setAlertShow(true)
-        seterrmsg('Phone number entered already exists')
-    }else if (e.target.role.value === 'Select Role') {
-        setAlertShow(true)
-        seterrmsg('Please Select Role')
-    }else if (e.target.status.value === 'Select Status') {
-        setAlertShow(true)
-        seterrmsg('Please Select Status')
-    }else {
-        dispatch(addUser(e.target))
-        handleClose()
-    }
-
+    console.log(e.target)
    }
 
    function handleCloseAlert() {
@@ -368,7 +349,7 @@ const Incidents = () => {
 
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-            <Modal.Title>Add Personel</Modal.Title>
+            <Modal.Title>New Audit</Modal.Title>
             </Modal.Header>
             {lding ? <Container>
                 <Row className="justify-content-md-center">
@@ -392,43 +373,70 @@ const Incidents = () => {
             
 
 
-            <Form onSubmit={handleSubmitAddUser}>
+            <Form onSubmit={handleSubmitAddAudit}>
                 <Modal.Body>
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label><strong>Full Name: </strong></Form.Label>
+                        <Form.Label><strong>Audit Name: </strong></Form.Label>
                         <Form.Control type="text" name="name" placeholder="Enter name" required />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label><strong>Email address: </strong></Form.Label>
-                        <Form.Control type="email" name="email" placeholder="Enter email" required />
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label><strong> Audit Description:</strong></Form.Label>
+                        <Form.Control as="textarea" name='description' rows={3} required />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPhone">
-                        <Form.Label><strong>Phone Number: </strong></Form.Label>
-                        <Form.Control type="text" name="phone" placeholder="Enter phone number eg: +254712345678" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicJob">
-                        <Form.Label><strong>Job Title: </strong></Form.Label>
-                        <Form.Control type="text" name="jobTitle" placeholder="Enter job title" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label><strong>Password: </strong></Form.Label>
-                        <Form.Control type="password" name="password" placeholder="Password" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicRole">
-                        <Form.Label><strong>Role: </strong></Form.Label>
-                        <Form.Select name="role" required>
-                            <option>Select Role</option>
-                            <option value="0">User</option>
-                            <option value="1">Admin</option>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Type: </strong></Form.Label>
+                        <Form.Select name="category" aria-label="Default select example">
+                            <option>Select Type</option>
+                            <option value=''>1</option>
                         </Form.Select>
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicStatus">
-                        <Form.Label><strong>Status: </strong></Form.Label>
-                        <Form.Select aria-label="Default select example" name="status" required>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Organization Requesting Audit: </strong></Form.Label>
+                        <Form.Select name="category" aria-label="Default select example">
+                            <option>Select Organization</option>
+                            <option value=''>1</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Measure: </strong></Form.Label>
+                        <Form.Select name="category" aria-label="Default select example">
+                            <option>Select Measure</option>
+                            <option value=''>1</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Category: </strong></Form.Label>
+                        <Form.Select name="category" aria-label="Default select example">
+                            <option>Select Category</option>
+                            <option value=''>1</option>
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Raised By: </strong></Form.Label>
+                        <Form.Control type="text" name="name" placeholder="Raised by" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Date Raised: </strong></Form.Label>
+                        <Form.Control type="date" name="dateRaised" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Date Due: </strong></Form.Label>
+                        <Form.Control type="date" name="dateDue" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Assigned To: </strong></Form.Label>
+                        <Form.Control type="text" name="assignedTo" placeholder="Assigned to" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Status: </strong></Form.Label>
+                        <Form.Select name="category" aria-label="Default select example">
                             <option>Select Status</option>
-                            <option value="0">Inactive</option>
-                            <option value="1">Active</option>
+                            <option value=''>1</option>
                         </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label><strong> Notes:</strong></Form.Label>
+                        <Form.Control as="textarea" name='notes' rows={3} required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>

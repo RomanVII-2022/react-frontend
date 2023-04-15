@@ -19,7 +19,7 @@ const NavBar = () => {
                     <Nav.Link as={NavLink} to="/users">Users</Nav.Link>
                     <Nav.Link as={NavLink} to="/incidents">Incidents</Nav.Link>
                     <Nav.Link as={NavLink} to='/audits'>Audit</Nav.Link>
-                    <Nav.Link href="#drivers">Drivers</Nav.Link>
+                    <Nav.Link as={NavLink} to='/drivers'>Drivers</Nav.Link>
                 </Nav>
                 <Nav>
                     <Button variant="outline-secondary"><MdManageAccounts /></Button>

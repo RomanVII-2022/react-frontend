@@ -8,6 +8,7 @@ import Incidents from './components/Incidents';
 import ManageIncident from './components/ManageIncident';
 import Audits from './components/Audits';
 import ManageAudits from './components/ManageAudits';
+import DriverView from './components/DriverView';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
           <Route path='/incidents/manage' element={<ManageIncident />} />
           <Route path='audits' element={<Audits />} />
           <Route path='/audits/manage' element={<ManageAudits />} />
+          <Route path='drivers' element={<DriverView />} />
         </Routes>
       </Router>
     </div>

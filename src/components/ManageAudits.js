@@ -4,6 +4,10 @@ import React from 'react'
 import NavBar from './NavBar'
 import Container from 'react-bootstrap/Container';
 import AuditCategory from './AuditCategory';
+import AuditMeasure from './AuditMeasure';
+import Organizations from './Organizations';
+import AuditTypes from './AuditTypes';
+import AuditStatus from './AuditStatus';
 
 const ManageAudits = () => {
 
@@ -22,16 +26,16 @@ const ManageAudits = () => {
                     <AuditCategory />
                 </Tab>
                 <Tab eventKey="measure" title="Measure">
-                    <h1>2</h1>
+                    <AuditMeasure />
                 </Tab>
                 <Tab eventKey="organization" title="Organization">
-                    <h1>3</h1>
+                    <Organizations />
                 </Tab>
                 <Tab eventKey="types" title="Types">
-                    <h1>4</h1>
+                    <AuditTypes />
                 </Tab>
                 <Tab eventKey="status" title="Status">
-                    <h1>5</h1>
+                    <AuditStatus />
                 </Tab>
             </Tabs>
         </Container>
