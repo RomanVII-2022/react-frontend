@@ -6,7 +6,7 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllCategories, fetchCategories, addCategory, isLoading, editCategory, deleteCategory } from '../features/organizations/organizationSlice';
+import { getAllOrganizations, fetchOrganizations, addCategory, isLoading, editCategory, deleteCategory } from '../features/organizations/organizationSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -99,7 +99,7 @@ const Organizations = () => {
 
     const [alertShow, setAlertShow] = useState(false);
 
-    const categories = useSelector(getAllCategories)
+    const categories = useSelector(getAllOrganizations)
 
     const lding = useSelector(isLoading)
 
@@ -165,8 +165,8 @@ const Organizations = () => {
     const { globalFilter, pageIndex, pageSize } = state
 
     useEffect(() => {
-        dispatch(fetchCategories())
-        console.log("fetching categories ...")
+        dispatch(fetchOrganizations())
+        console.log("fetching organizations ...")
     }, [])
 
     return (

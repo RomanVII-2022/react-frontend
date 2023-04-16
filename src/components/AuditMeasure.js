@@ -6,7 +6,7 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllCategories, fetchCategories, addCategory, isLoading, editCategory, deleteCategory } from '../features/auditMeasure/auditMeasureSlice';
+import { getAllMeasure, fetchMeasures, addMeasures, isLoading, editMeasures, deleteMeasures } from '../features/auditMeasure/auditMeasureSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -32,7 +32,7 @@ const AuditMeasure = () => {
     }
 
     const handleDeleteBtn = (id) => {
-        dispatch(deleteCategory(id))
+        dispatch(deleteMeasures(id))
     }
 
     const [categoryEdit, setCategoryEdit] = useState({})
@@ -61,7 +61,7 @@ const AuditMeasure = () => {
             setAlertShow(true)
             seterrmsg('Category already exists')
         }else {
-            dispatch(editCategory(formData))
+            dispatch(editMeasures(formData))
             handleClose()
         }
     }
@@ -99,7 +99,7 @@ const AuditMeasure = () => {
 
     const [alertShow, setAlertShow] = useState(false);
 
-    const categories = useSelector(getAllCategories)
+    const categories = useSelector(getAllMeasure)
 
     const lding = useSelector(isLoading)
 
@@ -116,7 +116,7 @@ const AuditMeasure = () => {
         seterrmsg('Category already exists')
     }else {
         const formData = new FormData(e.target)
-        dispatch(addCategory(formData))
+        dispatch(addMeasures(formData))
         handleClose()
     }
 
@@ -165,8 +165,8 @@ const AuditMeasure = () => {
     const { globalFilter, pageIndex, pageSize } = state
 
     useEffect(() => {
-        dispatch(fetchCategories())
-        console.log("fetching categories ...")
+        dispatch(fetchMeasures())
+        console.log("fetching measures ...")
     }, [])
 
     return (

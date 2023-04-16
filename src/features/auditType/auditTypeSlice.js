@@ -3,7 +3,7 @@ import axios from 'axios';
 import alertify from 'alertifyjs';
 
 
-export const fetchCategories = createAsyncThunk('atype/fetchCategories', async () => {
+export const fetchTypes = createAsyncThunk('atype/fetchTypes', async () => {
     const response = await axios.get('http://localhost:8000/AuditTypeViewSet/')
     return response.data
 })
@@ -35,14 +35,14 @@ const auditTypeSlice = createSlice({
     name: 'atype',
     initialState: initialState,
     extraReducers: (builders) => {
-        builders.addCase(fetchCategories.pending, (state, action) => {
+        builders.addCase(fetchTypes.pending, (state, action) => {
             state.loading = true
         })
-        builders.addCase(fetchCategories.fulfilled, (state, action) => {
+        builders.addCase(fetchTypes.fulfilled, (state, action) => {
             state.loading = false
             state.categories = action.payload
         })
-        builders.addCase(fetchCategories.rejected, (state, action) => {
+        builders.addCase(fetchTypes.rejected, (state, action) => {
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error(action.error.message);
@@ -99,5 +99,5 @@ const auditTypeSlice = createSlice({
 })
 
 export default auditTypeSlice.reducer
-export const getAllCategories = (state) => state.atype.categories
+export const getAllTypes = (state) => state.atype.categories
 export const isLoading = (state) => state.atype.loading

@@ -3,7 +3,7 @@ import axios from 'axios';
 import alertify from 'alertifyjs';
 
 
-export const fetchCategories = createAsyncThunk('organization/fetchCategories', async () => {
+export const fetchOrganizations = createAsyncThunk('organization/fetchOrganizations', async () => {
     const response = await axios.get('http://localhost:8000/AuditOrganizationViewSet/')
     return response.data
 })
@@ -35,14 +35,14 @@ const organizationSlice = createSlice({
     name: 'organization',
     initialState: initialState,
     extraReducers: (builders) => {
-        builders.addCase(fetchCategories.pending, (state, action) => {
+        builders.addCase(fetchOrganizations.pending, (state, action) => {
             state.loading = true
         })
-        builders.addCase(fetchCategories.fulfilled, (state, action) => {
+        builders.addCase(fetchOrganizations.fulfilled, (state, action) => {
             state.loading = false
             state.categories = action.payload
         })
-        builders.addCase(fetchCategories.rejected, (state, action) => {
+        builders.addCase(fetchOrganizations.rejected, (state, action) => {
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error(action.error.message);
@@ -99,5 +99,5 @@ const organizationSlice = createSlice({
 })
 
 export default organizationSlice.reducer
-export const getAllCategories = (state) => state.organization.categories
+export const getAllOrganizations = (state) => state.organization.categories
 export const isLoading = (state) => state.organization.loading

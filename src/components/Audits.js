@@ -7,7 +7,12 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllUsers, fetchUsers, addUser, isLoading, editUser, deleteUser } from '../features/users/userSlice';
+import { getAllAudits, fetchAudits, addAudit, isLoading, editAudit, deleteAudit } from '../features/audits/auditSlice';
+import { getAllCategories, fetchCategories } from '../features/auditCategory/auditCategorySlice';
+import { getAllMeasure, fetchMeasures } from '../features/auditMeasure/auditMeasureSlice';
+import { getAllOrganizations, fetchOrganizations } from '../features/organizations/organizationSlice';
+import { getAllTypes, fetchTypes } from '../features/auditType/auditTypeSlice';
+import { getAllStatus, fetchStatus } from '../features/auditStatus/auditStatusSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -21,62 +26,49 @@ import { Link } from 'react-router-dom';
 
 const Incidents = () => {
 
-    const [userDelete, setUserDelete] = useState({})
+    const categories = useSelector(getAllCategories)
+
+    const measures = useSelector(getAllMeasure)
+
+    const organizations = useSelector(getAllOrganizations)
+
+    const types = useSelector(getAllTypes)
+
+    const status = useSelector(getAllStatus)
+
+    const [auditDelete, setAuditDelete] = useState({})
 
     const [deleteShow, setDeleteShow] = useState(false);
 
     const handleDeleteClose = () => setDeleteShow(false);
     const handleDeleteShow = () => setDeleteShow(true);
 
-    function handleUserDelete(user) {
+    function handleAuditDelete(audit) {
         handleDeleteShow()
-        setUserDelete(user)
+        setAuditDelete(audit)
     }
 
     const handleDeleteBtn = (id) => {
-        dispatch(deleteUser(id))
+        dispatch(deleteAudit(id))
     }
 
-    const [userEdit, setUserEdit] = useState({})
+    const [auditEdit, setAuditEdit] = useState({})
 
     const [editShow, setEditShow] = useState(false);
 
     const handleEditClose = () => setEditShow(false);
     const handleEditShow = () => setEditShow(true);
 
-    function handleUserEdit(user) {
+    function handleAuditEdit(audit) {
         handleEditShow()
-        setUserEdit(user)
+        setAuditEdit(audit)
     }
 
-    const handleEditSubmitUser = (e, id, passwrd) => {
+    const handleEditSubmitAudit = (e, id) => {
         e.preventDefault()
-
         const formData = new FormData(e.target)
-        formData.append('password', passwrd)
-        const ID = parseInt(id)
-        formData.append('id', ID)
-
-        const otherUsers = users.filter(user => user.id !== id)
-        const eEmail = otherUsers.filter(user => user.email === e.target.email.value)
-        const ePhone = otherUsers.filter(user => user.phone === e.target.phone.value)
-
-        if (eEmail.length > 0) {
-            setAlertShow(true)
-            seterrmsg('Email entered already exists')
-        }else if (ePhone.length > 0) {
-            setAlertShow(true)
-            seterrmsg('Phone number entered already exists')
-        }else if (e.target.role.value === 'Select Role') {
-            setAlertShow(true)
-            seterrmsg('Please Select Role')
-        }else if (e.target.status.value === 'Select Status') {
-            setAlertShow(true)
-            seterrmsg('Please Select Status')
-        }else {
-            dispatch(editUser(formData))
-            handleClose()
-        }
+        formData.append('id', id)
+        dispatch(editAudit(formData))
     }
 
     const COLUMNS = [
@@ -94,45 +86,51 @@ const Incidents = () => {
         {
             Header: 'Category:',
             Footer: 'Category',
-            accessor: 'category',
+            accessor: 'auditCategory',
+            Cell: ({value}) => {const cat = categories.filter(category => category.id === value); return cat[0].name}
         },
         {
             Header: 'Measure:',
             Footer: 'Measure',
-            accessor: 'measure',
+            accessor: 'auditMeasure',
+            Cell: ({value}) => {const meas = measures.filter(measure => measure.id === value); return meas[0].name}
         },
         {
             Header: 'Type:',
             Footer: 'Type',
-            accessor: 'type',
+            accessor: 'auditType',
+            Cell: ({value}) => {const typ = types.filter(type => type.id === value); return typ[0].name}
         },
         {
             Header: 'Organization:',
             Footer: 'Organization',
             accessor: 'organization',
+            Cell: ({value}) => {const org = organizations.filter(organization => organization.id === value); return org[0].name}
         },
         {
             Header: 'Description:',
             Footer: 'Dascription',
             accessor: 'description',
+            Cell: ({value}) => {return value.substring(0, 50)}
         },
         {
             Header: 'Due Date:',
             Footer: 'Due Date',
-            accessor: 'dueDate',
+            accessor: 'dateDue',
         }, 
         {
             Header: 'Status:',
             Footer: 'Status',
             accessor: 'auditStatus',
+            Cell: ({value}) => {const sts = status.filter(stat => stat.id === value); return sts[0].name}
         },
         {
             Header: "Action",
             accessor: "action",
             Cell: ({row}) => (
               <div>
-                <i style={{cursor: 'pointer'}} onClick={() => handleUserEdit(row.original)}><MdEdit /></i> | 
-                {' '}<i style={{cursor: 'pointer'}} onClick={() => handleUserDelete(row.original)}><MdDelete /></i>
+                <i style={{cursor: 'pointer'}} onClick={() => handleAuditEdit(row.original)}><MdEdit /></i> | 
+                {' '}<i style={{cursor: 'pointer'}} onClick={() => handleAuditDelete(row.original)}><MdDelete /></i>
               </div>
             ),
             disableFilters: true
@@ -141,7 +139,7 @@ const Incidents = () => {
 
     const [alertShow, setAlertShow] = useState(false);
 
-    const users = []
+    const audits = useSelector(getAllAudits)
 
     const lding = useSelector(isLoading)
 
@@ -151,7 +149,8 @@ const Incidents = () => {
 
    function handleSubmitAddAudit (e) {
     e.preventDefault()
-    console.log(e.target)
+    const formData = new FormData(e.target)
+    dispatch(addAudit(formData))
    }
 
    function handleCloseAlert() {
@@ -165,7 +164,7 @@ const Incidents = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => users, [])
+    const data = useMemo(() => audits, [])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -197,8 +196,13 @@ const Incidents = () => {
     const { globalFilter, pageIndex, pageSize } = state
 
     useEffect(() => {
-        dispatch(fetchUsers())
-        console.log("fetching users ...")
+        dispatch(fetchAudits())
+        dispatch(fetchCategories())
+        dispatch(fetchMeasures())
+        dispatch(fetchTypes())
+        dispatch(fetchStatus())
+        dispatch(fetchOrganizations())
+        console.log("fetching audits ...")
     }, [])
 
   return (
@@ -385,35 +389,43 @@ const Incidents = () => {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label><strong>Audit Type: </strong></Form.Label>
-                        <Form.Select name="category" aria-label="Default select example">
+                        <Form.Select name="auditType" aria-label="Default select example">
                             <option>Select Type</option>
-                            <option value=''>1</option>
+                            {types.map(type => (
+                                <option key={type.id} value={type.id}>{type.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label><strong>Organization Requesting Audit: </strong></Form.Label>
-                        <Form.Select name="category" aria-label="Default select example">
+                        <Form.Select name="organization" aria-label="Default select example">
                             <option>Select Organization</option>
-                            <option value=''>1</option>
+                            {organizations.map(org => (
+                                <option key={org.id} value={org.id}>{org.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label><strong>Audit Measure: </strong></Form.Label>
-                        <Form.Select name="category" aria-label="Default select example">
+                        <Form.Select name="auditMeasure" aria-label="Default select example">
                             <option>Select Measure</option>
-                            <option value=''>1</option>
+                            {measures.map(measure => (
+                                <option key={measure.id} value={measure.id}>{measure.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label><strong>Audit Category: </strong></Form.Label>
-                        <Form.Select name="category" aria-label="Default select example">
+                        <Form.Select name="auditCategory" aria-label="Default select example">
                             <option>Select Category</option>
-                            <option value=''>1</option>
+                            {categories.map(category => (
+                                <option key={category.id} value={category.id}>{category.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label><strong>Raised By: </strong></Form.Label>
-                        <Form.Control type="text" name="name" placeholder="Raised by" required />
+                        <Form.Control type="text" name="raisedBy" placeholder="Raised by" required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label><strong>Date Raised: </strong></Form.Label>
@@ -429,9 +441,11 @@ const Incidents = () => {
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
                         <Form.Label><strong>Audit Status: </strong></Form.Label>
-                        <Form.Select name="category" aria-label="Default select example">
+                        <Form.Select name="auditStatus" aria-label="Default select example">
                             <option>Select Status</option>
-                            <option value=''>1</option>
+                            {status.map(sts => (
+                                <option key={sts.id} value={sts.id}>{sts.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
@@ -452,7 +466,7 @@ const Incidents = () => {
 
         <Modal show={editShow} onHide={handleEditClose}>
             <Modal.Header closeButton>
-            <Modal.Title>Edit User</Modal.Title>
+            <Modal.Title>Edit Audit</Modal.Title>
             </Modal.Header>
             {lding ? <Container>
                 <Row className="justify-content-md-center">
@@ -476,39 +490,80 @@ const Incidents = () => {
             
 
 
-            <Form onSubmit={(e) => handleEditSubmitUser(e, userEdit.id, userEdit.password)}>
+            <Form onSubmit={(e) => handleEditSubmitAudit(e, auditEdit.id)}>
                 <Modal.Body>
+                <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Name: </strong></Form.Label>
+                        <Form.Control type="text" name="name" defaultValue={auditEdit.name} placeholder="Enter name" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label><strong> Audit Description:</strong></Form.Label>
+                        <Form.Control as="textarea" name='description' defaultValue={auditEdit.description} rows={3} required />
+                    </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label><strong>Full Name: </strong></Form.Label>
-                        <Form.Control type="text" name="name" defaultValue={userEdit.name} placeholder="Enter name" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label><strong>Email address: </strong></Form.Label>
-                        <Form.Control type="email" name="email" defaultValue={userEdit.email} placeholder="Enter email" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPhone">
-                        <Form.Label><strong>Phone Number: </strong></Form.Label>
-                        <Form.Control type="text" name="phone" defaultValue={userEdit.phone} placeholder="Enter phone number eg: +254712345678" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicJob">
-                        <Form.Label><strong>Job Title: </strong></Form.Label>
-                        <Form.Control type="text" name="jobTitle" defaultValue={userEdit.jobTitle} placeholder="Enter job title" required />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicRole">
-                        <Form.Label><strong>Role: </strong></Form.Label>
-                        <Form.Select name="role" defaultValue={userEdit.role} required>
-                            <option>Select Role</option>
-                            <option value="0">User</option>
-                            <option value="1">Admin</option>
+                        <Form.Label><strong>Audit Type: </strong></Form.Label>
+                        <Form.Select name="auditType" defaultValue={auditEdit.auditType} aria-label="Default select example">
+                            <option>Select Type</option>
+                            {types.map(type => (
+                                <option key={type.id} value={type.id}>{type.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicStatus">
-                        <Form.Label><strong>Status: </strong></Form.Label>
-                        <Form.Select defaultValue={userEdit.status} aria-label="Default select example" name="status" required>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Organization Requesting Audit: </strong></Form.Label>
+                        <Form.Select name="organization" defaultValue={auditEdit.organization} aria-label="Default select example">
+                            <option>Select Organization</option>
+                            {organizations.map(org => (
+                                <option key={org.id} value={org.id}>{org.name}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Measure: </strong></Form.Label>
+                        <Form.Select name="auditMeasure" defaultValue={auditEdit.auditMeasure} aria-label="Default select example">
+                            <option>Select Measure</option>
+                            {measures.map(measure => (
+                                <option key={measure.id} value={measure.id}>{measure.name}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Category: </strong></Form.Label>
+                        <Form.Select name="auditCategory" defaultValue={auditEdit.auditCategory} aria-label="Default select example">
+                            <option>Select Category</option>
+                            {categories.map(category => (
+                                <option key={category.id} value={category.id}>{category.name}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Raised By: </strong></Form.Label>
+                        <Form.Control type="text" name="raisedBy" defaultValue={auditEdit.raisedBy} placeholder="Raised by" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Date Raised: </strong></Form.Label>
+                        <Form.Control type="date" name="dateRaised" defaultValue={auditEdit.dateRaised} required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Date Due: </strong></Form.Label>
+                        <Form.Control type="date" name="dateDue" defaultValue={auditEdit.dateDue} required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Assigned To: </strong></Form.Label>
+                        <Form.Control type="text" name="assignedTo" defaultValue={auditEdit.assignedTo} placeholder="Assigned to" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Audit Status: </strong></Form.Label>
+                        <Form.Select name="auditStatus" defaultValue={auditEdit.auditStatus} aria-label="Default select example">
                             <option>Select Status</option>
-                            <option value="0">Inactive</option>
-                            <option value="1">Active</option>
+                            {status.map(sts => (
+                                <option key={sts.id} value={sts.id}>{sts.name}</option>
+                            ))}
                         </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label><strong> Notes:</strong></Form.Label>
+                        <Form.Control as="textarea" name='notes' defaultValue={auditEdit.notes} rows={3} required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
@@ -525,7 +580,7 @@ const Incidents = () => {
 
         <Modal show={deleteShow} onHide={handleDeleteClose}>
             <Modal.Header closeButton>
-            <Modal.Title>Delete User</Modal.Title>
+            <Modal.Title>Delete Audit</Modal.Title>
             </Modal.Header>
             {lding ? <Container>
                 <Row className="justify-content-md-center">
@@ -551,13 +606,13 @@ const Incidents = () => {
 
             
             <Modal.Body>
-                <p className='text-danger'>Are you sure you want to delete this user?</p>
+                <p className='text-danger'>Are you sure you want to delete this audit?</p>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleDeleteClose}>
                 Close
             </Button>
-            <Button type='submit' onClick={() => handleDeleteBtn(userDelete.id)} variant="danger">
+            <Button type='submit' onClick={() => handleDeleteBtn(auditDelete.id)} variant="danger">
                 Delete
             </Button>
             </Modal.Footer>

@@ -3,7 +3,7 @@ import axios from 'axios';
 import alertify from 'alertifyjs';
 
 
-export const fetchCategories = createAsyncThunk('status/fetchCategories', async () => {
+export const fetchStatus = createAsyncThunk('status/fetchStatus', async () => {
     const response = await axios.get('http://localhost:8000/AuditStatusViewSet/')
     return response.data
 })
@@ -35,14 +35,14 @@ const auditStatusSlice = createSlice({
     name: 'status',
     initialState: initialState,
     extraReducers: (builders) => {
-        builders.addCase(fetchCategories.pending, (state, action) => {
+        builders.addCase(fetchStatus.pending, (state, action) => {
             state.loading = true
         })
-        builders.addCase(fetchCategories.fulfilled, (state, action) => {
+        builders.addCase(fetchStatus.fulfilled, (state, action) => {
             state.loading = false
             state.categories = action.payload
         })
-        builders.addCase(fetchCategories.rejected, (state, action) => {
+        builders.addCase(fetchStatus.rejected, (state, action) => {
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error(action.error.message);
@@ -99,5 +99,5 @@ const auditStatusSlice = createSlice({
 })
 
 export default auditStatusSlice.reducer
-export const getAllCategories = (state) => state.status.categories
+export const getAllStatus = (state) => state.status.categories
 export const isLoading = (state) => state.status.loading

@@ -3,31 +3,31 @@ import axios from 'axios';
 import alertify from 'alertifyjs';
 
 
-export const fetchCategories = createAsyncThunk('measure/fetchCategories', async () => {
+export const fetchMeasures = createAsyncThunk('measure/fetchMeasures', async () => {
     const response = await axios.get('http://localhost:8000/AuditMeasureViewSet/')
     return response.data
 })
 
-export const addCategory = createAsyncThunk('measure/addCategory', async (category) => {
+export const addMeasures = createAsyncThunk('measure/addMeasures', async (category) => {
     const response = await axios.post('http://localhost:8000/AuditMeasureViewSet/', category)
     return response.data
 })
 
 
-export const editCategory = createAsyncThunk('measure/editCategory', async (category) => {
+export const editMeasures = createAsyncThunk('measure/editMeasures', async (category) => {
     const id = parseInt(category.get('id'))
     const response = await axios.put(`http://localhost:8000/AuditMeasureViewSet/${id}/`, category)
     return response.data
 })
 
-export const deleteCategory = createAsyncThunk('measure/deleteCategory', async (id) => {
+export const deleteMeasures = createAsyncThunk('measure/deleteMeasures', async (id) => {
     const response = await axios.delete(`http://localhost:8000/AuditMeasureViewSet/${id}/`)
     return response.data
 })
 
 const initialState = {
     loading: false,
-    categories: [],
+    measures: [],
 }
 
 
@@ -35,39 +35,39 @@ const auditMeasureSlice = createSlice({
     name: 'measure',
     initialState: initialState,
     extraReducers: (builders) => {
-        builders.addCase(fetchCategories.pending, (state, action) => {
+        builders.addCase(fetchMeasures.pending, (state, action) => {
             state.loading = true
         })
-        builders.addCase(fetchCategories.fulfilled, (state, action) => {
+        builders.addCase(fetchMeasures.fulfilled, (state, action) => {
             state.loading = false
-            state.categories = action.payload
+            state.measures = action.payload
         })
-        builders.addCase(fetchCategories.rejected, (state, action) => {
+        builders.addCase(fetchMeasures.rejected, (state, action) => {
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error(action.error.message);
         })
-        builders.addCase(addCategory.pending, (state, action) => {
+        builders.addCase(addMeasures.pending, (state, action) => {
             state.loading = true
         })
-        builders.addCase(addCategory.fulfilled, (state, action) => {
+        builders.addCase(addMeasures.fulfilled, (state, action) => {
             state.loading = false
-            state.categories.push(action.payload)
+            state.measures.push(action.payload)
             alertify.set('notifier','position', 'top-right');
             alertify.success("Measure Added Successfully");
         })
-        builders.addCase(addCategory.rejected, (state, action) => {
+        builders.addCase(addMeasures.rejected, (state, action) => {
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error("Error! Measure Not Added");
         })
-        builders.addCase(editCategory.pending, (state, action) => {
+        builders.addCase(editMeasures.pending, (state, action) => {
             state.loading = true
         })
-        builders.addCase(editCategory.fulfilled, (state, action) => {
+        builders.addCase(editMeasures.fulfilled, (state, action) => {
             state.loading = false
             const {id, name, description} = action.payload
-            const doesExist = state.categories.find(category => category.id === id)
+            const doesExist = state.measures.find(measure => measure.id === id)
             if (doesExist) {
                 doesExist.name = name
                 doesExist.description = description
@@ -75,22 +75,22 @@ const auditMeasureSlice = createSlice({
             alertify.set('notifier','position', 'top-right');
             alertify.success("Measure Edited Successfully");
         })
-        builders.addCase(editCategory.rejected, (state, action) => {
+        builders.addCase(editMeasures.rejected, (state, action) => {
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error("Error! Measure Not Edited");
         })
-        builders.addCase(deleteCategory.pending, (state, action) => {
+        builders.addCase(deleteMeasures.pending, (state, action) => {
             state.loading = true
         })
-        builders.addCase(deleteCategory.fulfilled, (state, action) => {
+        builders.addCase(deleteMeasures.fulfilled, (state, action) => {
             state.loading = false
             const id = parseInt(action.meta.arg)
-            state.categories = state.categories.filter(category => category.id !== id)
+            state.measures = state.measures.filter(measure => measure.id !== id)
             alertify.set('notifier','position', 'top-right');
             alertify.success("Measure Deleted Successfully");
         })
-        builders.addCase(deleteCategory.rejected, (state, action) => {
+        builders.addCase(deleteMeasures.rejected, (state, action) => {
             state.loading = false
             alertify.set('notifier','position', 'top-right');
             alertify.error("Error! Measure Not Deleted");
@@ -99,5 +99,5 @@ const auditMeasureSlice = createSlice({
 })
 
 export default auditMeasureSlice.reducer
-export const getAllCategories = (state) => state.measure.categories
+export const getAllMeasure = (state) => state.measure.measures
 export const isLoading = (state) => state.measure.loading
