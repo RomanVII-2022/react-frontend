@@ -9,6 +9,7 @@ import organizationReducer from '../features/organizations/organizationSlice';
 import atypeReducer from '../features/auditType/auditTypeSlice';
 import statusReducer from '../features/auditStatus/auditStatusSlice';
 import auditReducer from '../features/audits/auditSlice'
+import incidentReducer from '../features/incidents/incidentSlice';
 
 export const store = configureStore({
     reducer: {
@@ -22,5 +23,6 @@ export const store = configureStore({
         atype: atypeReducer,
         status: statusReducer,
         audit: auditReducer,
+        incident: incidentReducer,
     }
 })

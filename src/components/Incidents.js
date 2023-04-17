@@ -7,7 +7,10 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllUsers, fetchUsers, addUser, isLoading, editUser, deleteUser } from '../features/users/userSlice';
+import { getAllUsers, addUser, editUser, deleteUser } from '../features/users/userSlice';
+import { getAllIncidents, fetchIncidents, addIncident, isLoading } from '../features/incidents/incidentSlice';
+import { getAllTypes, fetchTypes } from '../features/incidentType/incidentTypeSlice';
+import { getAllViolations, fetchViolations } from '../features/violations/violationSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -20,6 +23,10 @@ import { MdEdit, MdDelete } from 'react-icons/md';
 import { Link } from 'react-router-dom';
 
 const Incidents = () => {
+
+    const types = useSelector(getAllTypes)
+
+    const violations = useSelector(getAllViolations)
 
     const [userDelete, setUserDelete] = useState({})
 
@@ -52,31 +59,6 @@ const Incidents = () => {
     const handleEditSubmitUser = (e, id, passwrd) => {
         e.preventDefault()
 
-        const formData = new FormData(e.target)
-        formData.append('password', passwrd)
-        const ID = parseInt(id)
-        formData.append('id', ID)
-
-        const otherUsers = users.filter(user => user.id !== id)
-        const eEmail = otherUsers.filter(user => user.email === e.target.email.value)
-        const ePhone = otherUsers.filter(user => user.phone === e.target.phone.value)
-
-        if (eEmail.length > 0) {
-            setAlertShow(true)
-            seterrmsg('Email entered already exists')
-        }else if (ePhone.length > 0) {
-            setAlertShow(true)
-            seterrmsg('Phone number entered already exists')
-        }else if (e.target.role.value === 'Select Role') {
-            setAlertShow(true)
-            seterrmsg('Please Select Role')
-        }else if (e.target.status.value === 'Select Status') {
-            setAlertShow(true)
-            seterrmsg('Please Select Status')
-        }else {
-            dispatch(editUser(formData))
-            handleClose()
-        }
     }
 
     const COLUMNS = [
@@ -100,6 +82,7 @@ const Incidents = () => {
             Header: 'Incident:',
             Footer: 'Incident',
             accessor: 'incident',
+            Cell: ({value}) => {const typ = types.filter(type => type.id === value); return typ[0].name}
         },
         {
             Header: 'Description:',
@@ -110,6 +93,7 @@ const Incidents = () => {
             Header: 'Violation:',
             Footer: 'Violation',
             accessor: 'violation',
+            Cell: ({value}) => {const viol = violations.filter(violation => violation.id === value); return viol[0].name}
         },
         {
             Header: 'Incident Date:',
@@ -124,7 +108,7 @@ const Incidents = () => {
         {
             Header: 'Action:',
             Footer: 'Action',
-            accessor: 'action',
+            accessor: 'incidentAction',
         },
         {
             Header: "Edit/Delete",
@@ -141,7 +125,7 @@ const Incidents = () => {
 
     const [alertShow, setAlertShow] = useState(false);
 
-    const users = []
+    const incidents = useSelector(getAllIncidents)
 
     const lding = useSelector(isLoading)
 
@@ -149,28 +133,10 @@ const Incidents = () => {
 
     const dispatch = useDispatch()
 
-   function handleSubmitAddUser (e) {
+   function handleSubmitAddIncident (e) {
     e.preventDefault()
-    const eEmail = users.filter(user => user.email === e.target.email.value)
-    const ePhone = users.filter(user => user.phone === e.target.phone.value)
-
-    if (eEmail.length > 0) {
-        setAlertShow(true)
-        seterrmsg('Email entered already exists')
-    }else if (ePhone.length > 0) {
-        setAlertShow(true)
-        seterrmsg('Phone number entered already exists')
-    }else if (e.target.role.value === 'Select Role') {
-        setAlertShow(true)
-        seterrmsg('Please Select Role')
-    }else if (e.target.status.value === 'Select Status') {
-        setAlertShow(true)
-        seterrmsg('Please Select Status')
-    }else {
-        dispatch(addUser(e.target))
-        handleClose()
-    }
-
+    const formData = new FormData(e.target)
+    dispatch(addIncident(formData))
    }
 
    function handleCloseAlert() {
@@ -184,7 +150,7 @@ const Incidents = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => users, [])
+    const data = useMemo(() => incidents, [])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -216,7 +182,9 @@ const Incidents = () => {
     const { globalFilter, pageIndex, pageSize } = state
 
     useEffect(() => {
-        dispatch(fetchUsers())
+        dispatch(fetchIncidents())
+        dispatch(fetchTypes())
+        dispatch(fetchViolations())
         console.log("fetching users ...")
     }, [])
 
@@ -368,7 +336,7 @@ const Incidents = () => {
 
         <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
-            <Modal.Title>Add Personel</Modal.Title>
+            <Modal.Title>Add Incident</Modal.Title>
             </Modal.Header>
             {lding ? <Container>
                 <Row className="justify-content-md-center">
@@ -392,43 +360,49 @@ const Incidents = () => {
             
 
 
-            <Form onSubmit={handleSubmitAddUser}>
+            <Form onSubmit={handleSubmitAddIncident}>
                 <Modal.Body>
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label><strong>Full Name: </strong></Form.Label>
-                        <Form.Control type="text" name="name" placeholder="Enter name" required />
+                        <Form.Label><strong>Vehicle: </strong></Form.Label>
+                        <Form.Control type="text" name="vehicle" placeholder="Enter vehicle" required />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label><strong>Email address: </strong></Form.Label>
-                        <Form.Control type="email" name="email" placeholder="Enter email" required />
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Driver: </strong></Form.Label>
+                        <Form.Control type="text" name="driver" placeholder="Enter driver" required />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPhone">
-                        <Form.Label><strong>Phone Number: </strong></Form.Label>
-                        <Form.Control type="text" name="phone" placeholder="Enter phone number eg: +254712345678" required />
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Incident: </strong></Form.Label>
+                        <Form.Select name="incident" required>
+                            <option>Select Incident</option>
+                            {types.map(type => (
+                                <option value={type.id}>{type.name}</option>
+                            ))}
+                        </Form.Select>
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label><strong>Description: </strong></Form.Label>
+                        <Form.Control as="textarea" name="description" rows={3} required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicJob">
-                        <Form.Label><strong>Job Title: </strong></Form.Label>
-                        <Form.Control type="text" name="jobTitle" placeholder="Enter job title" required />
+                        <Form.Label><strong>Action: </strong></Form.Label>
+                        <Form.Control type="text" name="incidentAction" placeholder="Enter action" required />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPassword">
-                        <Form.Label><strong>Password: </strong></Form.Label>
-                        <Form.Control type="password" name="password" placeholder="Password" required />
+                    <Form.Group className="mb-3" controlId="formBasicJob">
+                        <Form.Label><strong>Location: </strong></Form.Label>
+                        <Form.Control type="text" name="location" placeholder="Enter location" required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicRole">
-                        <Form.Label><strong>Role: </strong></Form.Label>
-                        <Form.Select name="role" required>
-                            <option>Select Role</option>
-                            <option value="0">User</option>
-                            <option value="1">Admin</option>
+                        <Form.Label><strong>Violation: </strong></Form.Label>
+                        <Form.Select name="violation" required>
+                            <option>Select Violation</option>
+                            {violations.map(violation => (
+                                <option value={violation.id}>{violation.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicStatus">
-                        <Form.Label><strong>Status: </strong></Form.Label>
-                        <Form.Select aria-label="Default select example" name="status" required>
-                            <option>Select Status</option>
-                            <option value="0">Inactive</option>
-                            <option value="1">Active</option>
-                        </Form.Select>
+                        <Form.Label><strong>Incident Date: </strong></Form.Label>
+                        <Form.Control type="date" name="incidentDate" required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
