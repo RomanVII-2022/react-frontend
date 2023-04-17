@@ -7,8 +7,7 @@ import { useTable, useSortBy, useGlobalFilter, useFilters, usePagination } from 
 import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
-import { getAllUsers, addUser, editUser, deleteUser } from '../features/users/userSlice';
-import { getAllIncidents, fetchIncidents, addIncident, isLoading } from '../features/incidents/incidentSlice';
+import { getAllIncidents, fetchIncidents, addIncident, isLoading, editIncident, deleteIncident } from '../features/incidents/incidentSlice';
 import { getAllTypes, fetchTypes } from '../features/incidentType/incidentTypeSlice';
 import { getAllViolations, fetchViolations } from '../features/violations/violationSlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
@@ -28,37 +27,39 @@ const Incidents = () => {
 
     const violations = useSelector(getAllViolations)
 
-    const [userDelete, setUserDelete] = useState({})
+    const [incidentDelete, setIncidentDelete] = useState({})
 
     const [deleteShow, setDeleteShow] = useState(false);
 
     const handleDeleteClose = () => setDeleteShow(false);
     const handleDeleteShow = () => setDeleteShow(true);
 
-    function handleUserDelete(user) {
+    function handleIncidentDelete(incident) {
         handleDeleteShow()
-        setUserDelete(user)
+        setIncidentDelete(incident)
     }
 
     const handleDeleteBtn = (id) => {
-        dispatch(deleteUser(id))
+        dispatch(deleteIncident(id))
     }
 
-    const [userEdit, setUserEdit] = useState({})
+    const [incidentEdit, setIncidentEdit] = useState({})
 
     const [editShow, setEditShow] = useState(false);
 
     const handleEditClose = () => setEditShow(false);
     const handleEditShow = () => setEditShow(true);
 
-    function handleUserEdit(user) {
+    function handleIncidentEdit(incident) {
         handleEditShow()
-        setUserEdit(user)
+        setIncidentEdit(incident)
     }
 
-    const handleEditSubmitUser = (e, id, passwrd) => {
+    const handleEditSubmitIncident = (e, id) => {
         e.preventDefault()
-
+        const formData = new FormData(e.target)
+        formData.append('id', id)
+        dispatch(editIncident(formData))
     }
 
     const COLUMNS = [
@@ -115,8 +116,8 @@ const Incidents = () => {
             accessor: "edit/delete",
             Cell: ({row}) => (
               <div>
-                <i style={{cursor: 'pointer'}} onClick={() => handleUserEdit(row.original)}><MdEdit /></i> | 
-                {' '}<i style={{cursor: 'pointer'}} onClick={() => handleUserDelete(row.original)}><MdDelete /></i>
+                <i style={{cursor: 'pointer'}} onClick={() => handleIncidentEdit(row.original)}><MdEdit /></i> | 
+                {' '}<i style={{cursor: 'pointer'}} onClick={() => handleIncidentDelete(row.original)}><MdDelete /></i>
               </div>
             ),
             disableFilters: true
@@ -418,7 +419,7 @@ const Incidents = () => {
 
         <Modal show={editShow} onHide={handleEditClose}>
             <Modal.Header closeButton>
-            <Modal.Title>Edit User</Modal.Title>
+            <Modal.Title>Edit Incident</Modal.Title>
             </Modal.Header>
             {lding ? <Container>
                 <Row className="justify-content-md-center">
@@ -442,39 +443,49 @@ const Incidents = () => {
             
 
 
-            <Form onSubmit={(e) => handleEditSubmitUser(e, userEdit.id, userEdit.password)}>
+            <Form onSubmit={(e) => handleEditSubmitIncident(e, incidentEdit.id)}>
                 <Modal.Body>
+                <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Vehicle: </strong></Form.Label>
+                        <Form.Control type="text" name="vehicle" defaultValue={incidentEdit.vehicle} placeholder="Enter vehicle" required />
+                    </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicName">
-                        <Form.Label><strong>Full Name: </strong></Form.Label>
-                        <Form.Control type="text" name="name" defaultValue={userEdit.name} placeholder="Enter name" required />
+                        <Form.Label><strong>Driver: </strong></Form.Label>
+                        <Form.Control type="text" name="driver" defaultValue={incidentEdit.driver} placeholder="Enter driver" required />
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
-                        <Form.Label><strong>Email address: </strong></Form.Label>
-                        <Form.Control type="email" name="email" defaultValue={userEdit.email} placeholder="Enter email" required />
+                    <Form.Group className="mb-3" controlId="formBasicName">
+                        <Form.Label><strong>Incident: </strong></Form.Label>
+                        <Form.Select name="incident" defaultValue={incidentEdit.incident} required>
+                            <option>Select Incident</option>
+                            {types.map(type => (
+                                <option value={type.id}>{type.name}</option>
+                            ))}
+                        </Form.Select>
                     </Form.Group>
-                    <Form.Group className="mb-3" controlId="formBasicPhone">
-                        <Form.Label><strong>Phone Number: </strong></Form.Label>
-                        <Form.Control type="text" name="phone" defaultValue={userEdit.phone} placeholder="Enter phone number eg: +254712345678" required />
+                    <Form.Group className="mb-3" controlId="exampleForm.ControlTextarea1">
+                        <Form.Label><strong>Description: </strong></Form.Label>
+                        <Form.Control as="textarea" name="description" defaultValue={incidentEdit.description} rows={3} required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicJob">
-                        <Form.Label><strong>Job Title: </strong></Form.Label>
-                        <Form.Control type="text" name="jobTitle" defaultValue={userEdit.jobTitle} placeholder="Enter job title" required />
+                        <Form.Label><strong>Action: </strong></Form.Label>
+                        <Form.Control type="text" name="incidentAction" defaultValue={incidentEdit.incidentAction} placeholder="Enter action" required />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formBasicJob">
+                        <Form.Label><strong>Location: </strong></Form.Label>
+                        <Form.Control type="text" name="location" defaultValue={incidentEdit.location} placeholder="Enter location" required />
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicRole">
-                        <Form.Label><strong>Role: </strong></Form.Label>
-                        <Form.Select name="role" defaultValue={userEdit.role} required>
-                            <option>Select Role</option>
-                            <option value="0">User</option>
-                            <option value="1">Admin</option>
+                        <Form.Label><strong>Violation: </strong></Form.Label>
+                        <Form.Select name="violation" defaultValue={incidentEdit.violation} required>
+                            <option>Select Violation</option>
+                            {violations.map(violation => (
+                                <option value={violation.id}>{violation.name}</option>
+                            ))}
                         </Form.Select>
                     </Form.Group>
                     <Form.Group className="mb-3" controlId="formBasicStatus">
-                        <Form.Label><strong>Status: </strong></Form.Label>
-                        <Form.Select defaultValue={userEdit.status} aria-label="Default select example" name="status" required>
-                            <option>Select Status</option>
-                            <option value="0">Inactive</option>
-                            <option value="1">Active</option>
-                        </Form.Select>
+                        <Form.Label><strong>Incident Date: </strong></Form.Label>
+                        <Form.Control type="date" name="incidentDate" defaultValue={incidentEdit.incidentDate} required />
                     </Form.Group>
                 </Modal.Body>
                 <Modal.Footer>
@@ -491,7 +502,7 @@ const Incidents = () => {
 
         <Modal show={deleteShow} onHide={handleDeleteClose}>
             <Modal.Header closeButton>
-            <Modal.Title>Delete User</Modal.Title>
+            <Modal.Title>Delete Incident</Modal.Title>
             </Modal.Header>
             {lding ? <Container>
                 <Row className="justify-content-md-center">
@@ -517,13 +528,13 @@ const Incidents = () => {
 
             
             <Modal.Body>
-                <p className='text-danger'>Are you sure you want to delete this user?</p>
+                <p className='text-danger'>Are you sure you want to delete this incident?</p>
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleDeleteClose}>
                 Close
             </Button>
-            <Button type='submit' onClick={() => handleDeleteBtn(userDelete.id)} variant="danger">
+            <Button type='submit' onClick={() => handleDeleteBtn(incidentDelete.id)} variant="danger">
                 Delete
             </Button>
             </Modal.Footer>

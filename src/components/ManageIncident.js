@@ -61,7 +61,7 @@ const ManageIncident = () => {
         formData.append('id', ID)
 
         const otherCategories = categories.filter(category => category.id !== id)
-        const eName = otherCategories.filter(category => category.email === e.target.name.value)
+        const eName = otherCategories.filter(category => category.name === e.target.name.value)
 
         if (eName.length > 0) {
             setAlertShow(true)
