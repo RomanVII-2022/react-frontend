@@ -181,7 +181,7 @@ const Users = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => users, [])
+    const data = useMemo(() => users, [users])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -215,7 +215,7 @@ const Users = () => {
     useEffect(() => {
         dispatch(fetchUsers())
         console.log("fetching users ...")
-    }, [])
+    }, [dispatch])
 
   return (
     <div>
