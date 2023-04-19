@@ -9,21 +9,27 @@ import ManageIncident from './components/ManageIncident';
 import Audits from './components/Audits';
 import ManageAudits from './components/ManageAudits';
 import DriverView from './components/DriverView';
+import Login from './components/Login';
+import { AuthProvider } from './context/AuthContext';
+import PrivateRoute from './utilities/PrivateRoute';
 
 function App() {
 
   return (
     <div>
       <Router>
-        <Routes>
-          <Route path='home' element={<Dashboard />} />
-          <Route path='users' element={<Users />} />
-          <Route path='incidents' element={<Incidents />} />
-          <Route path='/incidents/manage' element={<ManageIncident />} />
-          <Route path='audits' element={<Audits />} />
-          <Route path='/audits/manage' element={<ManageAudits />} />
-          <Route path='drivers' element={<DriverView />} />
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route path='/' element={<Login />} />
+            <Route path='home' element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+            <Route path='users' element={<Users />} />
+            <Route path='incidents' element={<Incidents />} />
+            <Route path='/incidents/manage' element={<ManageIncident />} />
+            <Route path='audits' element={<Audits />} />
+            <Route path='/audits/manage' element={<ManageAudits />} />
+            <Route path='drivers' element={<DriverView />} />
+          </Routes>
+        </AuthProvider>
       </Router>
     </div>
   );
