@@ -146,7 +146,7 @@ const IncidentType = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => types, [])
+    const data = useMemo(() => types, [types])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -180,7 +180,7 @@ const IncidentType = () => {
     useEffect(() => {
         dispatch(fetchTypes())
         console.log("fetching types ...")
-    }, [])
+    }, [dispatch])
 
   return (
     <div>

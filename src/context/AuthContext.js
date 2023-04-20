@@ -31,8 +31,18 @@ export const AuthProvider = ({children}) => {
         })
     }
 
+    const AuthLogout = () => {
+        setAuthToken(null)
+        setUser(null)
+        localStorage.removeItem('AuthToken')
+        navigate('/')
+    }
+
     const contextData = {
+        user: user,
+        authToken: authToken,
         AuthLogin: AuthLogin,
+        AuthLogout: AuthLogout,
     }
 
     return (

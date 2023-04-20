@@ -133,7 +133,7 @@ const Organizations = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => categories, [])
+    const data = useMemo(() => categories, [categories])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -167,7 +167,7 @@ const Organizations = () => {
     useEffect(() => {
         dispatch(fetchOrganizations())
         console.log("fetching organizations ...")
-    }, [])
+    }, [dispatch])
 
     return (
         <div>

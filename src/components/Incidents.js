@@ -151,7 +151,7 @@ const Incidents = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => incidents, [])
+    const data = useMemo(() => incidents, [incidents])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -186,7 +186,7 @@ const Incidents = () => {
         dispatch(fetchIncidents())
         dispatch(fetchTypes())
         dispatch(fetchViolations())
-        console.log("fetching users ...")
+        console.log("fetching incidents ...")
     }, [])
 
   return (

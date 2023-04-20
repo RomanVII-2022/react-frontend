@@ -133,7 +133,7 @@ const AuditTypes = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => categories, [])
+    const data = useMemo(() => categories, [categories])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -167,7 +167,7 @@ const AuditTypes = () => {
     useEffect(() => {
         dispatch(fetchTypes())
         console.log("fetching types ...")
-    }, [])
+    }, [dispatch])
 
     return (
         <div>

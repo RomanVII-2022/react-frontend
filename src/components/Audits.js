@@ -164,7 +164,7 @@ const Incidents = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => audits, [])
+    const data = useMemo(() => audits, [audits])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])

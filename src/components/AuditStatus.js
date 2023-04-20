@@ -133,7 +133,7 @@ const AuditStatus = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => categories, [])
+    const data = useMemo(() => categories, [categories])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -167,7 +167,7 @@ const AuditStatus = () => {
     useEffect(() => {
         dispatch(fetchStatus())
         console.log("fetching status ...")
-    }, [])
+    }, [dispatch])
 
     return (
         <div>

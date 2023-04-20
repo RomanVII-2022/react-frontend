@@ -22,12 +22,12 @@ function App() {
           <Routes>
             <Route path='/' element={<Login />} />
             <Route path='home' element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path='users' element={<Users />} />
-            <Route path='incidents' element={<Incidents />} />
-            <Route path='/incidents/manage' element={<ManageIncident />} />
-            <Route path='audits' element={<Audits />} />
-            <Route path='/audits/manage' element={<ManageAudits />} />
-            <Route path='drivers' element={<DriverView />} />
+            <Route path='users' element={<PrivateRoute><Users /></PrivateRoute>} />
+            <Route path='incidents' element={<PrivateRoute><Incidents /></PrivateRoute>} />
+            <Route path='/incidents/manage' element={<PrivateRoute><ManageIncident /></PrivateRoute>} />
+            <Route path='audits' element={<PrivateRoute><Audits /></PrivateRoute>} />
+            <Route path='/audits/manage' element={<PrivateRoute><ManageAudits /></PrivateRoute>} />
+            <Route path='drivers' element={<PrivateRoute><DriverView /></PrivateRoute>} />
           </Routes>
         </AuthProvider>
       </Router>

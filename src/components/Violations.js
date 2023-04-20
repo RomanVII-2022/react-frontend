@@ -142,7 +142,7 @@ const Violations = () => {
     const handleShow = () => setShow(true);
 
     const columns = useMemo(() => COLUMNS, [])
-    const data = useMemo(() => violations, [])
+    const data = useMemo(() => violations, [violations])
     const defaultColumn = useMemo(() => {
         return {Filter: ColumnFilter}
     }, [])
@@ -176,7 +176,7 @@ const Violations = () => {
     useEffect(() => {
         dispatch(fetchViolations())
         console.log("fetching violations ...")
-    }, [])
+    }, [dispatch])
 
   return (
     <div>
