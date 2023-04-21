@@ -1,7 +1,4 @@
-import Tab from 'react-bootstrap/Tab';
-import Tabs from 'react-bootstrap/Tabs';
 import React, { useState, useEffect, useMemo } from 'react'
-import NavBar from './NavBar'
 import Table from 'react-bootstrap/Table';
 import Container from 'react-bootstrap/Container';
 import Button from 'react-bootstrap/Button';
@@ -10,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import GlobalFilter from "./GlobalFilter";
 import ColumnFilter from "./ColumnFilter";
 import { getAllTypes, fetchTypes, addType, isLoading, editType, deleteType } from '../features/incidentType/incidentTypeSlice';
-import { getAllCategories } from '../features/incidentsCategory/incidentsCategorySlice';
+import { getAllCategories, fetchCategories } from '../features/incidentsCategory/incidentsCategorySlice';
 import { FaArrowUp, FaArrowDown } from 'react-icons/fa';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
@@ -20,7 +17,6 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { MdEdit, MdDelete } from 'react-icons/md';
-import { Link } from 'react-router-dom';
 
 const IncidentType = () => {
 
@@ -87,7 +83,7 @@ const IncidentType = () => {
             Header: 'Category:',
             Footer: 'Category',
             accessor: 'category',
-            Cell: ({value}) => {const cat = categories.filter(category => category.id === value); value = cat[0].name; return value}
+            Cell: ({value}) => {return categories.filter(category => category.id === value).map(category => (category.name))}
         },
         {
             Header: 'Description:',
@@ -179,6 +175,7 @@ const IncidentType = () => {
 
     useEffect(() => {
         dispatch(fetchTypes())
+        dispatch(fetchCategories())
         console.log("fetching types ...")
     }, [dispatch])
 

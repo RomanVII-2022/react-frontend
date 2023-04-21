@@ -23,6 +23,8 @@ import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { MdEdit, MdDelete } from 'react-icons/md';
 import { Link } from 'react-router-dom';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Popover from 'react-bootstrap/Popover';
 
 const Incidents = () => {
 
@@ -87,31 +89,47 @@ const Incidents = () => {
             Header: 'Category:',
             Footer: 'Category',
             accessor: 'auditCategory',
-            Cell: ({value}) => {const cat = categories.filter(category => category.id === value); return cat[0].name}
+            Cell: ({value}) => {return categories.filter(category => category.id === value).map(category => (category.name))}
         },
         {
             Header: 'Measure:',
             Footer: 'Measure',
             accessor: 'auditMeasure',
-            Cell: ({value}) => {const meas = measures.filter(measure => measure.id === value); return meas[0].name}
+            Cell: ({value}) => {return measures.filter(measure => measure.id === value).map(measure => (measure.name))}
         },
         {
             Header: 'Type:',
             Footer: 'Type',
             accessor: 'auditType',
-            Cell: ({value}) => {const typ = types.filter(type => type.id === value); return typ[0].name}
+            Cell: ({value}) => {return types.filter(type => type.id === value).map(type => (type.name))}
         },
         {
             Header: 'Organization:',
             Footer: 'Organization',
             accessor: 'organization',
-            Cell: ({value}) => {const org = organizations.filter(organization => organization.id === value); return org[0].name}
+            Cell: ({value}) => {return organizations.filter(organization => organization.id === value).map(type => (type.name))}
         },
         {
             Header: 'Description:',
             Footer: 'Dascription',
             accessor: 'description',
-            Cell: ({value}) => {return value.substring(0, 50)}
+            Cell: ({value}) => {return(
+                <OverlayTrigger
+                    trigger="click"
+                    key="bottom"
+                    placement="bottom"
+                    overlay={
+                        <Popover id={'popover-positioned-bottom'}>
+                        <Popover.Header as="h3">Description</Popover.Header>
+                        <Popover.Body>
+                            <strong>{value}</strong>
+                        </Popover.Body>
+                        </Popover>
+                    }
+                    >
+                    <a href='#'>Show Description</a>
+                </OverlayTrigger>
+            );}
         },
         {
             Header: 'Due Date:',
@@ -122,7 +140,7 @@ const Incidents = () => {
             Header: 'Status:',
             Footer: 'Status',
             accessor: 'auditStatus',
-            Cell: ({value}) => {const sts = status.filter(stat => stat.id === value); return sts[0].name}
+            Cell: ({value}) => {return status.filter(stat => stat.id === value).map(stat => (stat.name))}
         },
         {
             Header: "Action",
@@ -203,7 +221,7 @@ const Incidents = () => {
         dispatch(fetchStatus())
         dispatch(fetchOrganizations())
         console.log("fetching audits ...")
-    }, [])
+    }, [dispatch])
 
   return (
     <div>

@@ -83,7 +83,7 @@ const Incidents = () => {
             Header: 'Incident:',
             Footer: 'Incident',
             accessor: 'incident',
-            Cell: ({value}) => {const typ = types.filter(type => type.id === value); return typ[0].name}
+            Cell: ({value}) => {return types.filter(type => type.id === value).map(type => (type.name))}
         },
         {
             Header: 'Description:',
@@ -94,7 +94,7 @@ const Incidents = () => {
             Header: 'Violation:',
             Footer: 'Violation',
             accessor: 'violation',
-            Cell: ({value}) => {const viol = violations.filter(violation => violation.id === value); return viol[0].name}
+            Cell: ({value}) => {return violations.filter(violation => violation.id === value).map(violation => (violation.name))}
         },
         {
             Header: 'Incident Date:',
@@ -187,7 +187,7 @@ const Incidents = () => {
         dispatch(fetchTypes())
         dispatch(fetchViolations())
         console.log("fetching incidents ...")
-    }, [])
+    }, [dispatch])
 
   return (
     <div>

@@ -9,6 +9,7 @@ import Modal from 'react-bootstrap/Modal';
 import AuthContext from '../context/AuthContext';
 import { useSelector, useDispatch } from 'react-redux';
 import { getAllUsers, fetchUsers } from '../features/users/userSlice';
+import { Link } from 'react-router-dom';
 
 const NavBar = () => {
 
@@ -17,8 +18,6 @@ const NavBar = () => {
     const {user, AuthLogout} = useContext(AuthContext)
 
     const users = useSelector(getAllUsers)
-
-    const logUser = users.filter(usr => usr.id === user.user_id)
 
     const [show, setShow] = useState(false);
 
@@ -34,7 +33,7 @@ const NavBar = () => {
     <div>
         <Navbar bg="light" expand="lg">
             <Container>
-                <Navbar.Brand href="#home">Vic<span style={{color: 'greenyellow'}}>Safety</span></Navbar.Brand>
+                <Navbar.Brand as={Link} to='/home'><span style={{color: '#2a71d0'}}>Vic</span><span style={{color: '#f3ba2f'}}>Safety</span></Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="me-auto">
@@ -55,7 +54,17 @@ const NavBar = () => {
             <Modal.Title>Account Details</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                
+                {users.filter(usr => usr.id === user.user_id).map(usr => (
+                    <div>
+                        <p><strong>Name: </strong>{usr.name}</p>
+                        <p><strong>Job Title: </strong>{usr.jobTitle}</p>
+                        <p><strong>Phone Number: </strong>{usr.phone}</p>
+                        <p><strong>Email: </strong>{usr.email}</p>
+                        <p><strong>Status: </strong>{usr.status === 1 ? 'Active' : 'Inactive'}</p>
+                        <p><strong>Role: </strong>{usr.role === 1 ? 'Admin' : 'User'}</p>
+                        <p><strong>Joined: </strong>{new Date(usr.created_on).toDateString()}</p>
+                    </div>
+                ))}
             </Modal.Body>
             <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>

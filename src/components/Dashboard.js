@@ -1,27 +1,89 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import NavBar from './NavBar'
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Card from 'react-bootstrap/Card';
-import { Bar } from 'react-chartjs-2';
+import { Line, Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS } from 'chart.js/auto';
+import { useSelector, useDispatch } from 'react-redux';
+import { getAllIncidents, fetchIncidents } from '../features/incidents/incidentSlice';
+import { getAllAudits, fetchAudits } from '../features/audits/auditSlice';
+import dayjs from 'dayjs';
 
 const Dashboard = () => {
 
+  const dispatch = useDispatch()
+
+  const incidents = useSelector(getAllIncidents)
+
+  const iDay = incidents.filter(incident => new Date(incident.incidentDate).getDay() === new Date().getDay())
+
+  const iWeek = incidents.filter(incident  => new Date(incident.incidentDate).getDay() - new Date().getDay() < 8)
+
+  const iMonth = incidents.filter(incident => new Date(incident.incidentDate).getMonth() === new Date().getMonth())
+
+  const audits = useSelector(getAllAudits)
+
+  const day = audits.filter(audit => new Date(audit.dateRaised).getDay() === new Date().getDay())
+
+  const week = audits.filter(audit => new Date(audit.dateRaised).getDay() - new Date().getDay() < 8)
+
+  const month = audits.filter(audit => new Date(audit.dateRaised).getMonth() === new Date().getMonth())
+
   const [userData, setUserData] = useState({
-    labels: [2019, 2020, 2021, 2022, 2023],
+    labels: ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
     datasets: [{
-      label: 'Users',
-      data: [200, 100, 389, 50, 80],
+      label: 'Incidents',
+      data: [2, 1, 3, 5, 8, 2, 1, 3, 5, 8, 5, 8],
       backgroundColor: [
-        '#2a71d0',
+        '#2a71d0'
+      ],
+      borderWidth: 2,
+      borderColor: 'black',
+    },
+    {
+      label: 'Audits',
+      data: [4, 8, 1, 1, 2, 4, 8, 1, 1, 2, 5, 0],
+      backgroundColor: [
         '#f3ba2f'
       ],
+      borderWidth: 2,
       borderColor: 'black',
-      borderWidht: 2,
-    }]
+    },
+  ]
   })
+
+
+  const [incidentData, setIncidentData] = useState({
+    labels: ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    datasets: [{
+      label: 'Incidents',
+      data: [200, 100, 389, 50, 80, 200, 100, 389, 50, 80, 50, 80],
+      backgroundColor: [
+        '#2a71d0'
+      ],
+      borderWidth: 2,
+      borderColor: 'black',
+    },
+    {
+      label: 'Audits',
+      data: [40, 80, 10, 150, 120, 40, 80, 10, 150, 120, 150, 120],
+      backgroundColor: [
+        '#f3ba2f'
+      ],
+      borderWidth: 2,
+      borderColor: 'black',
+    },
+  ]
+  })
+
+  let count = 0;
+
+  useEffect(() => {
+    dispatch(fetchIncidents())
+    dispatch(fetchAudits())
+  }, [dispatch])
 
   return (
     <div>
@@ -33,12 +95,12 @@ const Dashboard = () => {
               <Card.Body>
                 <Card.Title>Today</Card.Title>
                 <Row>
-                  <Col>
+                  <Col>  
                     Incidents:
                   </Col>
                   <Col>
                     <div style={{float: 'right'}}>
-                      <strong>0</strong>
+                      <strong>{iDay.length}</strong>
                     </div>
                   </Col>
                 </Row>
@@ -48,7 +110,7 @@ const Dashboard = () => {
                   </Col>
                   <Col>
                     <div style={{float: 'right'}}>
-                      <strong>0</strong>
+                      <strong>{day.length}</strong>
                     </div>
                   </Col>
                 </Row>
@@ -65,7 +127,7 @@ const Dashboard = () => {
                   </Col>
                   <Col>
                     <div style={{float: 'right'}}>
-                      <strong>0</strong>
+                      <strong>{iWeek.length}</strong>
                     </div>
                   </Col>
                 </Row>
@@ -75,7 +137,7 @@ const Dashboard = () => {
                   </Col>
                   <Col>
                     <div style={{float: 'right'}}>
-                      <strong>0</strong>
+                      <strong>{week.length}</strong>
                     </div>
                   </Col>
                 </Row>
@@ -94,7 +156,7 @@ const Dashboard = () => {
                   </Col>
                   <Col>
                     <div style={{float: 'right'}}>
-                      <strong>0</strong>
+                      <strong>{iMonth.length}</strong>
                     </div>
                   </Col>
                 </Row>
@@ -104,125 +166,7 @@ const Dashboard = () => {
                   </Col>
                   <Col>
                     <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-        <Row style={{marginTop: '10px'}}>
-          <Col>
-            <Card>
-              <Card.Body>
-                <Card.Title>
-                  <Row>
-                    <Col>
-                      Total Incidents
-                    </Col>
-                    <Col>
-                      <div style={{float: 'right'}}>
-                        <strong>0</strong>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card.Title>
-                <Row>
-                  <Col>
-                    Incidents:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    Audits:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Col>
-          <Col>
-            <Card>
-              <Card.Body>
-                <Card.Title>
-                  <Row>
-                    <Col>
-                      Total Audits
-                    </Col>
-                    <Col>
-                      <div style={{float: 'right'}}>
-                        <strong>0</strong>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card.Title>
-                <Row>
-                  <Col>
-                    Incidents:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    Audits:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-        <Row style={{marginTop: '10px'}}>
-          <Col>
-            <Card>
-              <Card.Body>
-                <Card.Title>
-                  <Row>
-                    <Col>
-                      Total Audits
-                    </Col>
-                    <Col>
-                      <div style={{float: 'right'}}>
-                        <strong>0</strong>
-                      </div>
-                    </Col>
-                  </Row>
-                </Card.Title>
-                <Row>
-                  <Col>
-                    Incidents:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    Audits:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
+                      <strong>{month.length}</strong>
                     </div>
                   </Col>
                 </Row>
@@ -235,28 +179,11 @@ const Dashboard = () => {
             <Card>
               <Card.Body>
                 <Card.Title className='text-center'>
-                  Incidents
+                  Total Incidents
                 </Card.Title>
-                <Row>
-                  <Col>
-                    Incidents:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
-                <Row>
-                  <Col>
-                    Audits:
-                  </Col>
-                  <Col>
-                    <div style={{float: 'right'}}>
-                      <strong>0</strong>
-                    </div>
-                  </Col>
-                </Row>
+                
+                <Doughnut data={incidentData} />
+                
               </Card.Body>
             </Card>
           </Col>
@@ -267,7 +194,7 @@ const Dashboard = () => {
                   Audits
                 </Card.Title>
 
-                <Bar data={userData} />
+                <Line data={userData} />
 
 
               </Card.Body>
