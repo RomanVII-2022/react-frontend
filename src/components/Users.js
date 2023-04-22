@@ -17,6 +17,7 @@ import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import Alert from 'react-bootstrap/Alert';
 import { MdEdit, MdDelete } from 'react-icons/md';
+import * as XLSX from 'xlsx';
 
 const Users = () => {
 
@@ -212,6 +213,16 @@ const Users = () => {
 
     const { globalFilter, pageIndex, pageSize } = state
 
+    const handleOnExport = () => {
+        var wb = XLSX.utils.book_new(),
+        ws = XLSX.utils.json_to_sheet(users);
+
+        XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
+
+        XLSX.writeFile(wb, "Users.xlsx")
+
+    }
+
     useEffect(() => {
         dispatch(fetchUsers())
         console.log("fetching users ...")
@@ -229,6 +240,7 @@ const Users = () => {
                     <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
                 </Col>
                 <Col>
+                    <Button style={{marginTop: '10px'}} variant="secondary" onClick={handleOnExport}>Export</Button>
                     <div className="float-end">
                         <DropdownButton
                             id="dropdown-button-dark-example2"
